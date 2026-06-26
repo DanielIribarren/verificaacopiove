@@ -11,8 +11,8 @@ import {
   MessageCircle,
   Phone,
   Plus,
+  PlusCircle,
   Search,
-  ShieldCheck,
   Users,
 } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useState } from "react";
@@ -71,13 +71,13 @@ export function App() {
       <Hero stats={stats} />
       <nav className="tabs" aria-label="Vistas principales">
         <button className={tab === "publico" ? "active" : ""} onClick={() => setTab("publico")}>
-          <MapPin size={18} /> Vista publica
+          <MapPin size={18} /> Buscar ayuda
         </button>
         <button
           className={tab === "voluntarios" ? "active" : ""}
           onClick={() => setTab("voluntarios")}
         >
-          <ShieldCheck size={18} /> Panel voluntario
+          <PlusCircle size={18} /> Registrar zona o acopio
         </button>
         <button className={tab === "datos" ? "active" : ""} onClick={() => setTab("datos")}>
           <Database size={18} /> Datos abiertos
@@ -100,9 +100,14 @@ function Hero({ stats }: { stats: Stats }) {
         <p className="eyebrow">Open source · datos verificables · Venezuela</p>
         <h1>Verifica Acopio VE</h1>
         <p className="lede">
-          Capa comunitaria para conectar donaciones con la realidad: confirma centros de acopio y
-          deja que las zonas que necesitan ayuda (como Los Palos Grandes o La Guaira) lo reporten.
-          Datos limpios y verificables para quienes ya estan ayudando.
+          <strong>Objetivo:</strong> conectar la ayuda con donde de verdad hace falta. Mostramos en
+          un solo lugar los <strong>centros de acopio</strong> que reciben donaciones y las{" "}
+          <strong>zonas de atencion</strong> que piden insumos, herramientas o personal.
+        </p>
+        <p className="lede">
+          <strong>El fin:</strong> que cada donacion llegue a un punto real y verificado, evitar
+          esfuerzos duplicados o falsos, y dar datos limpios y abiertos a las iniciativas que ya
+          estan ayudando.
         </p>
         <div className="hero-actions">
           <a href={`${SUPABASE_URL}/rest/v1/v_points?is_public_default=eq.true`} className="secondary-action">
@@ -233,7 +238,7 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
             className={kindFilter === "necesidad" ? "active" : ""}
             onClick={() => setKindFilter("necesidad")}
           >
-            Necesitan
+            Zonas de atencion
           </button>
         </div>
         <label>
@@ -286,8 +291,8 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
         <div className="list-header">
           <h2>{total} puntos visibles</h2>
           <p>
-            Centros de acopio y zonas que necesitan ayuda. Por defecto solo se muestran los
-            confirmados o recientemente reverificados.
+            Centros de acopio y zonas de atencion. Por defecto solo se muestran los confirmados o
+            recientemente reverificados.
           </p>
         </div>
         {error && (
@@ -302,7 +307,7 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
           <div className="empty-state">
             <Eye size={22} />
             No hay puntos con esos filtros. Prueba incluir no verificados, cambiar el insumo o el
-            tipo (acopio / necesitan).
+            tipo (acopio / zonas de atencion).
           </div>
         )}
         {loading && (
@@ -351,7 +356,7 @@ function CenterCard({
     <article className="center-card">
       <div className="card-topline">
         <span className={`kind-badge kind-${center.kind}`}>
-          {isNeed ? "🆘 Necesita" : "📦 Acopio"}
+          {isNeed ? "🆘 Zona de atencion" : "📦 Acopio"}
         </span>
         <StatusPill status={center.trustStatus} />
         <span className="trust-level">Nivel {center.trustLevel}</span>
@@ -457,7 +462,7 @@ function VolunteerPanel({ reloadKey, onMutate }: { reloadKey: number; onMutate: 
       <div className="panel-card">
         <div className="section-heading">
           <Plus size={18} />
-          <h2>Sugerir punto</h2>
+          <h2>Registrar zona o acopio</h2>
         </div>
         <NewCenterForm onCreated={onMutate} />
       </div>
@@ -554,7 +559,7 @@ function NewCenterForm({ onCreated }: { onCreated: () => void }) {
           className={isNeed ? "active" : ""}
           onClick={() => setKind("necesidad")}
         >
-          🆘 Zona que necesita
+          🆘 Zona de atencion
         </button>
       </div>
       <input name="name" required placeholder={isNeed ? "Nombre de la zona o sector" : "Nombre del centro"} />
@@ -650,7 +655,7 @@ function VerificationCard({
       <div>
         <div className="card-topline">
           <span className={`kind-badge kind-${center.kind}`}>
-            {center.kind === "necesidad" ? "🆘 Necesita" : "📦 Acopio"}
+            {center.kind === "necesidad" ? "🆘 Zona de atencion" : "📦 Acopio"}
           </span>
           <StatusPill status={center.trustStatus} />
         </div>

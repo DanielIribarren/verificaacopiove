@@ -11,7 +11,7 @@ import type {
 
 export const KIND_LABELS: Record<PointKind, string> = {
   acopio: "Centro de acopio",
-  necesidad: "Zona que necesita",
+  necesidad: "Zona de atencion",
 };
 
 export const NEED_LABELS: Record<NeedCategory, string> = {
@@ -254,7 +254,7 @@ export function buildWhatsAppShare(center: Center): string {
   const lastVerified = center.lastVerifiedAt
     ? new Date(center.lastVerifiedAt).toLocaleString("es-VE")
     : "sin verificacion";
-  const header = center.kind === "necesidad" ? "🆘 Zona que necesita ayuda" : "📦 Centro de acopio";
+  const header = center.kind === "necesidad" ? "🆘 Zona de atencion" : "📦 Centro de acopio";
   const itemsLine =
     center.kind === "necesidad" ? `Necesitan: ${items}` : `Reciben: ${items}`;
   const restriction =
