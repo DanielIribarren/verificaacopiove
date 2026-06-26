@@ -131,7 +131,7 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
   const [kindFilter, setKindFilter] = useState<"all" | PointKind>("all");
   const [need, setNeed] = useState<"all" | NeedCategory>("all");
   const [stateFilter, setStateFilter] = useState("all");
-  const [includeUnverified, setIncludeUnverified] = useState(false);
+  const [onlyVerified, setOnlyVerified] = useState(false);
   const [stateOptions, setStateOptions] = useState<string[]>([]);
 
   const [centers, setCenters] = useState<Center[]>([]);
@@ -162,7 +162,7 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
       kind: kindFilter,
       need,
       state: stateFilter,
-      includeUnverified,
+      onlyVerified,
       page: 0,
       pageSize: PAGE_SIZE,
     })
@@ -177,7 +177,7 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery, kindFilter, need, stateFilter, includeUnverified, reloadKey]);
+  }, [debouncedQuery, kindFilter, need, stateFilter, onlyVerified, reloadKey]);
 
   async function loadMore() {
     const next = page + 1;
@@ -188,7 +188,7 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
         kind: kindFilter,
         need,
         state: stateFilter,
-        includeUnverified,
+        onlyVerified,
         page: next,
         pageSize: PAGE_SIZE,
       });
@@ -274,15 +274,16 @@ function PublicView({ reloadKey, onMutate }: { reloadKey: number; onMutate: () =
         <label className="toggle-row">
           <input
             type="checkbox"
-            checked={includeUnverified}
-            onChange={(event) => setIncludeUnverified(event.target.checked)}
+            checked={onlyVerified}
+            onChange={(event) => setOnlyVerified(event.target.checked)}
           />
-          Mostrar reportes no verificados
+          Mostrar solo verificados
         </label>
-        {includeUnverified && (
+        {!onlyVerified && (
           <div className="warning-note">
             <AlertTriangle size={16} />
-            Los reportes no verificados no deben usarse para mover grandes donaciones.
+            Se muestran tambien puntos sin verificar. Revisa la etiqueta de estado antes de mover
+            grandes donaciones.
           </div>
         )}
       </aside>
@@ -722,7 +723,7 @@ function OpenDataView() {
         kind: "all",
         need: "all",
         state: "all",
-        includeUnverified: false,
+        onlyVerified: false,
         page: 0,
         pageSize: 1000,
       });

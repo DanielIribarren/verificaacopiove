@@ -12,7 +12,7 @@ import type {
 const DISPLAY_COLUMNS =
   "id,kind,name,organization,state,city,address,contact,trust_level,lat,lng," +
   "last_verified_at,source_id,receives,does_not_receive,notes,duplicate_of," +
-  "created_at,updated_at,trust_status,hidden_from_public,is_public_default,is_public_unverified";
+  "created_at,updated_at,trust_status,hidden_from_public,is_public_default,is_verified";
 
 // La fila de la vista (snake_case) tal como llega de PostgREST.
 interface PointRow {
@@ -70,7 +70,7 @@ export interface PublicQuery {
   kind: "all" | PointKind;
   need: "all" | NeedCategory;
   state: string; // "all" o un estado concreto
-  includeUnverified: boolean;
+  onlyVerified: boolean; // si true, filtra a solo puntos verificados
   page: number; // base 0
   pageSize: number;
 }
@@ -91,9 +91,10 @@ export async function fetchPublicPoints(q: PublicQuery): Promise<Paged> {
     .order("updated_at", { ascending: false })
     .range(from, to);
 
-  query = q.includeUnverified
-    ? query.eq("is_public_unverified", true)
-    : query.eq("is_public_default", true);
+  // Base: todo lo mostrable (verificacion no requerida).
+  query = query.eq("is_public_default", true);
+  // Filtro opcional: solo verificados.
+  if (q.onlyVerified) query = query.eq("is_verified", true);
 
   if (q.kind !== "all") query = query.eq("kind", q.kind);
   if (q.state !== "all") query = query.eq("state", q.state);
@@ -218,7 +219,7 @@ export async function createPoint(input: NewPointInput): Promise<void> {
     receives: input.receives,
     does_not_receive: input.doesNotReceive,
     notes: input.notes,
-    hidden_from_public: true,
+    hidden_from_public: false,
   });
   if (error) throw error;
 }
